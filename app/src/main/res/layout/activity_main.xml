@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/colorDark">
+
+    <Button
+        android:id="@+id/btn_parts"
+        android:text="@string/place_btn"
+        style="@style/MainPage"/>
+
+    <Button
+        android:id="@+id/btn_invent"
+        android:layout_toEndOf="@+id/btn_parts"
+        android:text="@string/btn_invent"
+        style="@style/MainPage"/>
+
+    <Button
+        android:id="@+id/btn_place"
+        android:layout_toStartOf="@+id/btn_parts"
+        android:text="@string/btn_place"
+        style="@style/MainPage"/>
+
+    <Button
+        android:id="@+id/btn_exit"
+        style="@style/MainPage"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="14sp"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:text="@string/exit_app"/>
+</RelativeLayout>
