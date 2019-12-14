@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/load_title"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/green"
         android:textSize="20sp"
         android:textStyle="bold|italic"
         android:layout_margin="15dp"
@@ -20,7 +20,7 @@
         android:id="@+id/txt_number_files"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/green"
         android:layout_toEndOf="@+id/txt_title_load"
         android:textSize="20sp"
         android:textStyle="bold|italic"
@@ -29,29 +29,23 @@
 
     <ImageButton
         android:id="@+id/btn_ok"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_margin="20dp"
         android:background="@color/colorDark"
-        android:src="@drawable/icon_ok"
+        android:src="@drawable/ok_images"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"/>
-
-    <Button
-        android:id="@+id/btn_load"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_margin="20dp"
-        android:padding="8dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/btn_ok"
         android:background="@color/colorDark"
-        android:textSize="16sp"
-        android:textColor="@color/colorWhite"
-        android:text="@string/load"
-        android:textStyle="bold|italic"/>
+        android:src="@drawable/back_icon"
+        android:layout_alignParentBottom="true"/>
 
-    <ScrollView
+    <LinearLayout
         android:id="@+id/scroll_display"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -59,15 +53,13 @@
         android:layout_below="@+id/txt_title_load"
         android:layout_above="@+id/btn_ok"
         android:padding="5dp"
+        android:background="@color/colorDark"
         android:layout_margin="10dp">
-        <LinearLayout
+        <ListView
             android:id="@+id/display_to_dock"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            />
+            android:layout_height="wrap_content"/>
 
-    </ScrollView>
-
+    </LinearLayout>
 
 </RelativeLayout>

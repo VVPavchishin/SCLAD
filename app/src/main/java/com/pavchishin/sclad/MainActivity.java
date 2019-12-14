@@ -17,6 +17,7 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
 
     static String PLACE_FOLDER = "Places";
+    static String ONEDRIVE_FOLDER = "OneDrive";
     static final String TAG = "S C L A D - >>>";
 
     Button placeCalculate, partsCalculae, inventCalculate, exit;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkFolder();
-                Intent intent = new Intent(MainActivity.this, ChoiseActivity.class);
+                Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
                 startActivity(intent);
             }
         });
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         if (view == null) {
             view = new View(activity);
         }
+        assert imm != null;
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

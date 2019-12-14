@@ -12,31 +12,39 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.pavchishin.sclad.MainActivity.ONEDRIVE_FOLDER;
 import static com.pavchishin.sclad.MainActivity.TAG;
 import static com.pavchishin.sclad.MainActivity.PLACE_FOLDER;
+import static com.pavchishin.sclad.ManagerActivity.ITEMS;
 
 public class ChoiseActivity extends AppCompatActivity {
 
-    private static final int FILE_SELECT_CODE = 5;
     private TextView loadTitle, titleNumberFiles;
-    private Button load;
-    private ImageButton ok;
-    private LinearLayout mainLayout;
+    private ImageButton ok, back;
+    private ListView mainList;
+    List<Item> itemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,71 +56,80 @@ public class ChoiseActivity extends AppCompatActivity {
         loadTitle.setVisibility(View.INVISIBLE);
         titleNumberFiles = findViewById(R.id.txt_number_files);
 
-        mainLayout = findViewById(R.id.display_to_dock);
-
-        load = findViewById(R.id.btn_load);
-        load.setOnClickListener(new View.OnClickListener() {
+        mainList = findViewById(R.id.display_to_dock);
+        back = findViewById(R.id.btn_back);
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                }
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                }
-                try {
-                    startActivityForResult(intent, FILE_SELECT_CODE);
-                } catch (ActivityNotFoundException e){}
+                Intent intent = new Intent(ChoiseActivity.this, ManagerActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
-    }
-    @SuppressLint("DefaultLocale")
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        setNoActionBar(this);
-        if (resultCode == RESULT_OK && requestCode == FILE_SELECT_CODE) {
-            if (data.getData() != null) {
-                String fileEName = getRealFilePath(data.getData());
-                showOnDisplay(fileEName);
-                copyFileFromUri(this, data.getData());
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    ClipData clipData = data.getClipData();
-                    for (int i = 0; i < clipData.getItemCount(); i++) {
-                        String fileMName = getRealFilePath(clipData.getItemAt(i).getUri());
-                        showOnDisplay(fileMName);
-                    }
+        ok = findViewById(R.id.btn_ok);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    copySelectedFiles(itemList);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+        });
 
+        Intent intent = getIntent();
+        itemList = (ArrayList<Item>) intent.getSerializableExtra(ITEMS);
+        assert itemList != null;
+        for (Item itm : itemList) {
+            Log.d(TAG, itm.getName());
         }
-        int dockCount = mainLayout.getChildCount();
+
+        fillDisplay(itemList);
+    }
+
+    private void copySelectedFiles(List<Item> itemList) throws IOException {
+        for (Item item : itemList) {
+            File source = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + File.separator + ONEDRIVE_FOLDER + File.separator + item.getName());
+            File destination = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + File.separator + PLACE_FOLDER + File.separator + item.getName());
+            FileChannel sourceChanel = null;
+            FileChannel destinationChanel = null;
+
+            try {
+                sourceChanel = new FileInputStream(source).getChannel();
+                destinationChanel = new FileOutputStream(destination).getChannel();
+                destinationChanel.transferFrom(sourceChanel, 0, sourceChanel.size());
+            } finally {
+                if (sourceChanel != null) {
+                    sourceChanel.close();
+                }
+                if (destinationChanel != null) {
+                    destinationChanel.close();
+                }
+            }
+        }
+
+
+    }
+
+    private void fillDisplay(List<Item> itemList) {
+        ItemAdapter adapter = new ItemAdapter(this, R.layout.item_layout, itemList);
+        mainList.setAdapter(adapter);
+        setTitle();
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void setTitle(){
+        loadTitle.setVisibility(View.VISIBLE);
+        int dockCount = itemList.size();
         if (dockCount == 1){
             titleNumberFiles.setText(String.format("%d   файл", dockCount));
         } else if (dockCount == 2 || dockCount == 3 || dockCount == 4){
             titleNumberFiles.setText(String.format("%d   файли", dockCount));
         } else
             titleNumberFiles.setText(String.format("%d   файлiв", dockCount));
-    }
-
-    private void showOnDisplay(String name) {
-        loadTitle.setVisibility(View.VISIBLE);
-        TextView view = new TextView(this);
-        view.setText(name);
-        view.setTextColor(Color.WHITE);
-        mainLayout.addView(view);
-    }
-
-    public String getRealFilePath(Uri uri){
-        String path = uri.getPath();
-        String[] pathArray = path.split(":");
-        String fileName = pathArray[pathArray.length - 1];
-        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName;
-        Log.d(TAG, filePath);
-        return fileName;
     }
 
     public boolean copyFileFromUri(Context context, Uri fileUri)
@@ -129,11 +146,9 @@ public class ChoiseActivity extends AppCompatActivity {
             if(root == null){
                 Log.d(TAG, "Failed to get root");
             }
-
-            // create a directory
             File saveDirectory = new File(Environment.getExternalStorageDirectory()+ File.separator + PLACE_FOLDER);
 
-            outputStream = new FileOutputStream( saveDirectory + File.separator + "filename.xlsx"); // filename.png, .mp3, .mp4 ...
+            outputStream = new FileOutputStream( saveDirectory + File.separator + "filename.xlsx");
             if(outputStream != null){
                 Log.d( TAG, "Output Stream Opened successfully");
             }
