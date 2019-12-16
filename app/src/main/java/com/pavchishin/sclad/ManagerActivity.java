@@ -1,14 +1,10 @@
 package com.pavchishin.sclad;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -17,14 +13,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.pavchishin.sclad.MainActivity.*;
 import static com.pavchishin.sclad.MainActivity.ONEDRIVE_FOLDER;
-import static com.pavchishin.sclad.MainActivity.PLACE_FOLDER;
+import static com.pavchishin.sclad.MainActivity.TAG;
 
 public class ManagerActivity extends AppCompatActivity {
 
@@ -101,11 +98,13 @@ public class ManagerActivity extends AppCompatActivity {
     }
 
     private String getDateFromName(String name) {
-        String nameDate;
-        String year = name.substring(14, 18);
-        String month = name.substring(18, 20);
-        String day = name.substring(20, 22);
-        nameDate = day + "." + month + "." + year;
+        String nameDate = "";
+        if (name.endsWith(".xlsx") && name.length() == 33) {
+            String year = name.substring(14, 18);
+            String month = name.substring(18, 20);
+            String day = name.substring(20, 22);
+            nameDate = day + "." + month + "." + year;
+        }
         return nameDate;
     }
 
