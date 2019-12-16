@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/txt_art"
         android:layout_width="0dp"
-        android:layout_weight="2.5"
+        android:layout_weight="2.7"
         android:layout_height="wrap_content"
         android:text="TextView"
         style="@style/PartStyle"/>
