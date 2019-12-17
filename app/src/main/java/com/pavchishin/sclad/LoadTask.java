@@ -38,9 +38,6 @@ public class LoadTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        helper = new DBHelper(activity);
-        database = new DBHelper(activity).getWritableDatabase();
-        helper.onCreatePlaceDB(database);
     }
 
     @Override
@@ -52,6 +49,9 @@ public class LoadTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
+        helper = new DBHelper(activity);
+        database = new DBHelper(activity).getWritableDatabase();
+        helper.onCreatePlaceDB(database);
 
         File workDirPath = new File(Environment.getExternalStorageDirectory()
                 + File.separator + PLACE_FOLDER);
