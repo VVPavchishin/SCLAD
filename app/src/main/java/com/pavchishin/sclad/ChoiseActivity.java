@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +37,8 @@ public class ChoiseActivity extends AppCompatActivity {
     private ListView mainList;
     List<Item> itemList;
 
+    ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,8 @@ public class ChoiseActivity extends AppCompatActivity {
         loadTitle = findViewById(R.id.txt_title_load);
         loadTitle.setVisibility(View.INVISIBLE);
         titleNumberFiles = findViewById(R.id.txt_number_files);
+
+        progressBar = findViewById(R.id.status_progress);
 
         mainList = findViewById(R.id.display_to_dock);
         back = findViewById(R.id.btn_back);
@@ -61,59 +66,24 @@ public class ChoiseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 removeFileIsExist();
-                try {
-                    copySelectedFiles(itemList);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                new LoadTask(ChoiseActivity.this).execute();
+                    new CopyTask(itemList, progressBar, ChoiseActivity.this).execute();
             }
         });
 
         Intent intent = getIntent();
         itemList = (ArrayList<Item>) intent.getSerializableExtra(ITEMS);
         assert itemList != null;
-        for (Item itm : itemList) {
-            Log.d(TAG, itm.getName());
-        }
         fillDisplay(itemList);
     }
 
     private void removeFileIsExist() {
         File destination = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + PLACE_FOLDER);
-        Log.d(TAG, destination.listFiles().length + " Length");
         if (destination.listFiles().length > 0){
-            for (File file : destination.listFiles()) {
+            for (File file : destination.listFiles())
                 file.delete();
-            }
         }
     }
-
-    private void copySelectedFiles(List<Item> itemList) throws IOException {
-        for (Item item : itemList) {
-            File source = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + File.separator + ONEDRIVE_FOLDER + File.separator + item.getName());
-            File destination = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + File.separator + PLACE_FOLDER + File.separator + item.getName());
-            FileChannel sourceChanel = null;
-            FileChannel destinationChanel = null;
-
-            try {
-                sourceChanel = new FileInputStream(source).getChannel();
-                destinationChanel = new FileOutputStream(destination).getChannel();
-                destinationChanel.transferFrom(sourceChanel, 0, sourceChanel.size());
-            } finally {
-                if (sourceChanel != null) {
-                    sourceChanel.close();
-                }
-                if (destinationChanel != null) {
-                    destinationChanel.close();
-                }
-            }
-        }
-    }
-
     private void fillDisplay(List<Item> itemList) {
         ItemAdapter adapter = new ItemAdapter(this, R.layout.item_layout, itemList);
         mainList.setAdapter(adapter);

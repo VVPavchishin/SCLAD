@@ -6,8 +6,10 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -18,11 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-
 import static com.pavchishin.sclad.DBHelper.TABLE_PLACES;
 import static com.pavchishin.sclad.MainActivity.PLACE_FOLDER;
+import static com.pavchishin.sclad.MainActivity.TAG;
 
-public class LoadTask extends AsyncTask<Void, Void, Void> {
+public class LoadTask extends AsyncTask<String, Integer, Void> {
 
     private static String EMPTY = "";
 
@@ -30,14 +32,21 @@ public class LoadTask extends AsyncTask<Void, Void, Void> {
     private Activity activity;
     private DBHelper helper;
     private SQLiteDatabase database;
+    @SuppressLint("StaticFieldLeak")
+    private ProgressBar progressBar;
 
-    public LoadTask(ChoiseActivity activity) {
+    public LoadTask(ChoiseActivity activity, ProgressBar progressBar) {
         this.activity = activity;
+        this.progressBar = progressBar;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        helper = new DBHelper(activity);
+        database = new DBHelper(activity).getWritableDatabase();
+        helper.onCreatePlaceDB(database);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -48,31 +57,33 @@ public class LoadTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
-        helper = new DBHelper(activity);
-        database = new DBHelper(activity).getWritableDatabase();
-        helper.onCreatePlaceDB(database);
-
-        File workDirPath = new File(Environment.getExternalStorageDirectory()
-                + File.separator + PLACE_FOLDER);
-        if (workDirPath.exists()) {
-            String[] inputFiles = workDirPath.list();
-
-            for (String fileName : inputFiles){
-                    if (!fileName.endsWith(".xslx")){
-                        try {
-                            fillDataBase(workDirPath, fileName);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+    protected Void doInBackground(String... strings) {
+        Log.d(TAG, " String  length " + strings.length);
+        int fileCount = 0;
+            for (String fileName : strings){
+                try {
+                    Log.d(TAG, ">>>> " + fileName + " <<<<");
+                    fillDataBase(fileName);
+                    publishProgress(++fileCount);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-        }
+            }
         return null;
     }
-    private void fillDataBase(File workDirPath, String fileName) throws Exception {
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        progressBar.setProgress(values[0]);
+    }
+
+    private void fillDataBase(String fileName) throws Exception {
         ContentValues cv = new ContentValues();
-        InputStream stream = new FileInputStream(workDirPath.toString()
+        Log.d(TAG, Environment.getExternalStorageDirectory()
+                + File.separator + fileName);
+        InputStream stream = new FileInputStream(Environment.getExternalStorageDirectory()
+                + File.separator + PLACE_FOLDER
                 + File.separator + fileName);
         XSSFWorkbook workbook = new XSSFWorkbook(stream);
         XSSFSheet sheet = workbook.getSheetAt(0);
@@ -92,6 +103,7 @@ public class LoadTask extends AsyncTask<Void, Void, Void> {
                 String numberDocument = String.valueOf(workbook.
                         getSheetAt(0).getRow(15).getCell(4));
                 cv.put(DBHelper.PLACE_DOCNAME, numberDocument);
+                Log.d(TAG, numberDocument);
 
                 Cell cellNam = row.getCell(2);
                 String cellName = cellNam.getStringCellValue();
