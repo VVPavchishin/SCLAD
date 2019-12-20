@@ -58,7 +58,6 @@ public class LoadTask extends AsyncTask<String, Integer, Void> {
 
     @Override
     protected Void doInBackground(String... strings) {
-        Log.d(TAG, " String  length " + strings.length);
         int fileCount = 0;
             for (String fileName : strings){
                 try {

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,6 +60,15 @@ public class DisplayActivity extends AppCompatActivity {
         partsView = findViewById(R.id.list_parts);
         fillLeftDisplay();
         fillBoxDisplay();
+
+        buttonBack = findViewById(R.id.button_back);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DisplayActivity.this, ManagerActivity.class));
+                finish();
+            }
+        });
 
         scanField.setOnClickListener(new View.OnClickListener() {
             @Override
