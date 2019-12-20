@@ -22,6 +22,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.pavchishin.sclad.DBHelper.DATABASE_PARTS;
 import static com.pavchishin.sclad.MainActivity.TAG;
 
 public class DisplayActivity extends AppCompatActivity {
@@ -67,6 +68,15 @@ public class DisplayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startActivity(new Intent(DisplayActivity.this, ManagerActivity.class));
                 finish();
+            }
+        });
+
+        completeScan = findViewById(R.id.scan_complete);
+        completeScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDatabase(DATABASE_PARTS);
+                startActivity(new Intent(DisplayActivity.this, MainActivity.class));
             }
         });
 
