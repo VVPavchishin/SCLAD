@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -39,7 +40,7 @@
             android:layout_alignParentEnd="true"
             android:padding="25dp"
             android:background="@color/colorDark"
-            app:srcCompat="@drawable/ok_ico" />
+            app:srcCompat="@drawable/ok_images" />
 
         <ImageButton
             android:id="@+id/bk_button"
@@ -61,7 +62,8 @@
             android:padding="25dp"
             android:textColor="@color/green"
             android:textSize="30sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="RelativeOverlap" />
     </RelativeLayout>
 
 

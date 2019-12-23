@@ -31,7 +31,7 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
     <style name="PartStyle">
-        <item name="android:textColor">@color/green</item>
+        <item name="android:textColor">@color/orange</item>
         <item name="android:textSize">16sp</item>
         <item name="android:padding">5dp</item>
         <item name="android:layout_width">wrap_content</item>

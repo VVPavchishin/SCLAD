@@ -52,7 +52,7 @@ public class ManagerActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ManagerActivity.this, ManagerActivity.class));
+                startActivity(new Intent(ManagerActivity.this, MainActivity.class));
                 finish();
             }
         });

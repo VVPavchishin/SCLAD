@@ -7,4 +7,6 @@
     <color name="colorWhite">@android:color/background_light</color>
     <color name="colorCyan">#808080</color>
     <color name="green">#00FF00</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="orange">#ff6700</color>
 </resources>

@@ -110,6 +110,7 @@ public class DisplayActivity extends AppCompatActivity {
         boxListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view.setSelected(true);
                 String selectedBox = (String) parent.getItemAtPosition(position);
                 ArrayList<Part> parts = new DBHelper(context).setBoxParts(context, selectedBox);
                 PartAdapter partAdapter = new PartAdapter(context, R.layout.part_layout, parts);
