@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorDark">
 
     <TextView
         android:id="@+id/titleText"
@@ -11,6 +13,7 @@
         android:background="@color/colorDark"
         android:gravity="center"
         android:padding="10dp"
+        android:layout_margin="15dp"
         android:text="@string/file_manager_title"
         android:textColor="@color/green"
         android:textSize="30sp"
@@ -24,16 +27,42 @@
         android:background="@color/colorDark"
         android:choiceMode="multipleChoice"/>
 
-
-    <Button
-        android:id="@+id/but_select"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/select_btn"
-        android:padding="15dp"
-        android:background="@color/colorDark"
-        android:textColor="@color/green"
-        android:textSize="25sp"
-        android:textStyle="bold" />
+        android:background="@color/colorDark">
+
+        <ImageButton
+            android:id="@+id/okNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:padding="25dp"
+            android:background="@color/colorDark"
+            app:srcCompat="@drawable/ok_ico" />
+
+        <ImageButton
+            android:id="@+id/bk_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@color/colorDark"
+            android:padding="25dp"
+            app:srcCompat="@drawable/back_icon" />
+
+        <TextView
+            android:id="@+id/txt_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_margin="15dp"
+            android:background="@color/colorDark"
+            android:padding="25dp"
+            android:textColor="@color/green"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+
 </LinearLayout>

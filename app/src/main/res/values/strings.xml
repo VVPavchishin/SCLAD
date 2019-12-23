@@ -8,8 +8,7 @@
     <string name="load_title">Завантажено</string>
     <string name="file_name">File name</string>
     <string name="date">Date</string>
-    <string name="select_btn">SELECT</string>
-    <string name="file_manager_title">FILE MANAGER</string>
+    <string name="file_manager_title">ВИБIР ФАЙЛУ</string>
     <string name="q_dock">Кiлькiсть накладних</string>
     <string name="q_places">Кiлькiсть мiсць</string>
     <string name="on_scan">Проскановано</string>

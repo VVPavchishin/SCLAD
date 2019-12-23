@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +34,9 @@ public class ManagerActivity extends AppCompatActivity {
     List<Item> selectedItems;
     ItemAdapter adapter;
     List<Item> itemList;
-    Button select;
+    TextView select;
+    ImageButton next;
+    ImageButton backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,23 +45,38 @@ public class ManagerActivity extends AppCompatActivity {
         setNoActionBar(this);
 
         fileList = findViewById(R.id.list_files);
-        select = findViewById(R.id.but_select);
+        select = findViewById(R.id.txt_select);
+        next = findViewById(R.id.okNext);
+
+        backButton = findViewById(R.id.bk_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ManagerActivity.this, ManagerActivity.class));
+                finish();
+            }
+        });
+
         itemList = new ArrayList<>();
         selectedItems = new ArrayList<>();
         adapter = new ItemAdapter(this, R.layout.item_layout, itemList);
         fileList.setAdapter(adapter);
 
         File[] files = destFile.listFiles();
+        assert files != null;
         if (files.length == 0){
             Toast.makeText(this, "Folder empty!", Toast.LENGTH_LONG).show();
         } else {
             for (File file : files) {
-                String dt = getDateFromName(file.getName());
-                itemList.add(new Item(R.drawable.file_icon, file.getName(), dt));
+                if (file.getName().endsWith(".xlsx") && file.getName().length() == 33){
+                    String dt = getDateFromName(file.getName());
+                    itemList.add(new Item(R.drawable.file_icon, file.getName(), dt));
+                }
+
             }
         }
 
-        select.setOnClickListener(new View.OnClickListener() {
+        next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ManagerActivity.this, ChoiseActivity.class);
@@ -81,30 +100,26 @@ public class ManagerActivity extends AppCompatActivity {
                     selected.setFolderRecourse(R.drawable.ok_icon);
                     adapter.notifyDataSetChanged();
                 }
-                select.setText(setButtonText(selectedItems.size()));
+                select.setText(setSelectedText(selectedItems.size()));
             }
         });
 
     }
 
-    private String setButtonText(int size) {
-        String name;
-        if (size == 0){
-            name = "SELECT";
-        } else {
-            name = "SELECT (" + size + ")";
+    private String setSelectedText(int size) {
+        String name = "";
+        if (size > 0){
+            name = "ВИБРАНО (" + size + ")";
         }
         return name;
     }
 
     private String getDateFromName(String name) {
-        String nameDate = "";
-        if (name.endsWith(".xlsx") && name.length() == 33) {
+        String nameDate;
             String year = name.substring(14, 18);
             String month = name.substring(18, 20);
             String day = name.substring(20, 22);
             nameDate = day + "." + month + "." + year;
-        }
         return nameDate;
     }
 
