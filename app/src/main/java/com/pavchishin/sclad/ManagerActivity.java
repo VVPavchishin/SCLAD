@@ -2,6 +2,7 @@ package com.pavchishin.sclad;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.pavchishin.sclad.MainActivity.ONEDRIVE_FOLDER;
-import static com.pavchishin.sclad.MainActivity.TAG;
 
 public class ManagerActivity extends AppCompatActivity {
 
@@ -37,6 +37,7 @@ public class ManagerActivity extends AppCompatActivity {
     TextView select;
     ImageButton next;
     ImageButton backButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,6 @@ public class ManagerActivity extends AppCompatActivity {
                     String dt = getDateFromName(file.getName());
                     itemList.add(new Item(R.drawable.file_icon, file.getName(), dt));
                 }
-
             }
         }
 
@@ -90,7 +90,7 @@ public class ManagerActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Item selected = (Item)parent.getItemAtPosition(position);
-                Log.d(TAG, selected.getName());
+
                 if (selectedItems.contains(selected)){
                     selected.setFolderRecourse(R.drawable.file_icon);
                     adapter.notifyDataSetChanged();
@@ -105,7 +105,6 @@ public class ManagerActivity extends AppCompatActivity {
         });
 
     }
-
     private String setSelectedText(int size) {
         String name = "";
         if (size > 0){

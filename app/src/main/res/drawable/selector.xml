@@ -3,5 +3,6 @@
     <item
         android:state_selected="true"
         android:color="@color/orange" />
+
     <item android:color="#00FF00"/>
 </selector>

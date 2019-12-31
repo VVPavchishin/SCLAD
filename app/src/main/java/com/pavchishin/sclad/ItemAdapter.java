@@ -2,6 +2,8 @@ package com.pavchishin.sclad;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +15,14 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import static com.pavchishin.sclad.MainActivity.TAG;
+
 public class ItemAdapter extends ArrayAdapter {
 
     private LayoutInflater inflater;
     private int layout;
     private List<Item> items;
+
 
     public ItemAdapter(@NonNull Context context, int resource, List<Item> items) {
         super(context, resource, items);
@@ -43,4 +48,5 @@ public class ItemAdapter extends ArrayAdapter {
 
         return view;
     }
+
 }

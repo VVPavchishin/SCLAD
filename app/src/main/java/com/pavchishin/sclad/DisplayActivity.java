@@ -3,7 +3,9 @@ package com.pavchishin.sclad;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +41,7 @@ public class DisplayActivity extends AppCompatActivity {
     ListView boxListView;
     ListView partsView;
 
-    List<String> numbers;
+    List<String> boxList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +58,10 @@ public class DisplayActivity extends AppCompatActivity {
 
         status = findViewById(R.id.im_status);
 
-        numbers = new ArrayList<>();
         boxListView = findViewById(R.id.box_list);
         partsView = findViewById(R.id.list_parts);
+
+
         fillLeftDisplay();
         fillBoxDisplay();
 
@@ -75,8 +78,7 @@ public class DisplayActivity extends AppCompatActivity {
         completeScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteDatabase(DATABASE_PARTS);
-                startActivity(new Intent(DisplayActivity.this, MainActivity.class));
+                confirmComplete();
             }
         });
 
@@ -104,7 +106,7 @@ public class DisplayActivity extends AppCompatActivity {
     }
 
     private void fillBoxDisplay() {
-        List<String> boxList = new DBHelper(context).showData(context, DBHelper.TABLE_PLACES);
+        boxList = new DBHelper(context).showData(context, DBHelper.TABLE_PLACES);
         ArrayAdapter<String> boxAdapter = new ArrayAdapter<>(context, R.layout.box_layout, boxList);
         boxListView.setAdapter(boxAdapter);
         boxListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -121,22 +123,46 @@ public class DisplayActivity extends AppCompatActivity {
     }
 
     private void checkBarcode(String barcode) {
-        for (String num : numbers) {
-            if (barcode.contains(num)){
-                status.setBackgroundResource(R.drawable.ok_im);
-                scanField.setText("");
-                numbers.remove(num);
-//                showParts(num);
-//                centerLayout.removeAllViews();
-//                setScanned(num);
-//                fillLeftDisplay();
-//                fillCentralDisplay();
-                break;
-            } else {
-                status.setBackgroundResource(R.drawable.not_ok_im);
-                scanField.setText("");
+        String code = barcode.trim().substring(0,8);
+        Log.d(TAG, code);
+        if (boxList.contains(code)){
+            Log.d(TAG, "Contain!!!");
+            status.setBackgroundResource(R.drawable.ok_im);
+            scanField.setText("");
+            setScanned(code);
+            fillBoxDisplay();
+            fillLeftDisplay();
+            fillRightDisplay(code);
+            if (new DBHelper(context).setUnScanNumbers(context, DBHelper.TABLE_PLACES) == 0){
+                status.setBackgroundResource(R.drawable.mission_complete);
             }
+        } else {
+            Log.d(TAG, "Not contain!!!");
+            status.setBackgroundResource(R.drawable.not_ok_im);
+            scanField.setText("");
         }
+    }
+
+    private void fillRightDisplay(String code) {
+        ArrayList<Part> parts = new DBHelper(context).setBoxParts(context, code);
+        PartAdapter partAdapter = new PartAdapter(context, R.layout.part_layout, parts);
+        partsView.setAdapter(partAdapter);
+    }
+
+    private void confirmComplete() {
+        new AlertDialog.Builder(this)
+                .setMessage("Завершити сканування?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        setNoActionBar(DisplayActivity.this);
+                        deleteDatabase(DATABASE_PARTS);
+                        startActivity(new Intent(DisplayActivity.this, MainActivity.class));
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();
+    }
+
+    private void setScanned(String num) {
+        new DBHelper(context).setScannedDB(context, num);
     }
 
     public void setNoActionBar(Activity activity) {
@@ -146,6 +172,7 @@ public class DisplayActivity extends AppCompatActivity {
         if (view == null) {
             view = new View(activity);
         }
+        assert imm != null;
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
