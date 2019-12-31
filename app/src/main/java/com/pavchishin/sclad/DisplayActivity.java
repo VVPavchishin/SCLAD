@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -69,7 +71,7 @@ public class DisplayActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(DisplayActivity.this, ManagerActivity.class));
+                startActivity(new Intent(DisplayActivity.this, MainActivity.class));
                 finish();
             }
         });
@@ -78,7 +80,9 @@ public class DisplayActivity extends AppCompatActivity {
         completeScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmComplete();
+                setNoActionBar(DisplayActivity.this);
+                String msg = "Завершити сканування";
+                confirmComplete(msg);
             }
         });
 
@@ -126,7 +130,6 @@ public class DisplayActivity extends AppCompatActivity {
         String code = barcode.trim().substring(0,8);
         Log.d(TAG, code);
         if (boxList.contains(code)){
-            Log.d(TAG, "Contain!!!");
             status.setBackgroundResource(R.drawable.ok_im);
             scanField.setText("");
             setScanned(code);
@@ -137,7 +140,6 @@ public class DisplayActivity extends AppCompatActivity {
                 status.setBackgroundResource(R.drawable.mission_complete);
             }
         } else {
-            Log.d(TAG, "Not contain!!!");
             status.setBackgroundResource(R.drawable.not_ok_im);
             scanField.setText("");
         }
@@ -149,16 +151,35 @@ public class DisplayActivity extends AppCompatActivity {
         partsView.setAdapter(partAdapter);
     }
 
-    private void confirmComplete() {
-        new AlertDialog.Builder(this)
-                .setMessage("Завершити сканування?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        setNoActionBar(DisplayActivity.this);
-                        deleteDatabase(DATABASE_PARTS);
-                        startActivity(new Intent(DisplayActivity.this, MainActivity.class));
-                    }})
-                .setNegativeButton(android.R.string.no, null).show();
+    private void confirmComplete(String msg) {
+        final Dialog dialog = new Dialog(DisplayActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.round_corner);
+
+        TextView title = dialog.findViewById(R.id.text_dialog);
+        title.setText(msg);
+
+        ImageButton dialogOk = dialog.findViewById(R.id.btn_ok);
+        dialogOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setNoActionBar(DisplayActivity.this);
+                deleteDatabase(DATABASE_PARTS);
+                startActivity(new Intent(DisplayActivity.this, MainActivity.class));
+                dialog.dismiss();
+            }
+        });
+
+        ImageButton dialogCancel = dialog.findViewById(R.id.btn_cancel);
+        dialogCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setNoActionBar(DisplayActivity.this);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     private void setScanned(String num) {

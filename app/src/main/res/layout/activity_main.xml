@@ -29,8 +29,8 @@
         style="@style/MainPage"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:textSize="14sp"
-        android:layout_margin="20dp"
-        android:padding="10dp"
+        android:textSize="20sp"
+        android:layout_margin="40dp"
+        android:padding="40dp"
         android:text="@string/exit_app"/>
 </RelativeLayout>

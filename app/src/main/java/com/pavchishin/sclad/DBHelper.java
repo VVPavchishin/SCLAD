@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.pavchishin.sclad.MainActivity.TAG;
 
@@ -80,7 +79,7 @@ public class DBHelper extends SQLiteOpenHelper {
         new DBHelper(context).getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
-    public ArrayList<String> showData(Context context, String table){
+    public ArrayList showData(Context context, String table){
         Log.d(TAG, "<--- Show database --->");
         ArrayList list = new ArrayList();
         Cursor c = new DBHelper(context).getWritableDatabase()
@@ -108,8 +107,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 update(DBHelper.TABLE_PLACES, cv, DBHelper.PLACE_PLACE_NUMBER +" =?", new String[]{placeNumber});
     }
 
-    public boolean doesTableExist(SQLiteDatabase db, String tableName) {
+    public boolean doesTableExist(Context context, String tableName) {
         Log.d(TAG, "<<<--- Check " + tableName + " existing.... --->>>");
+        SQLiteDatabase db = new DBHelper(context).getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT DISTINCT tbl_name FROM sqlite_master " +
                 "WHERE tbl_name = '" + tableName + "'", null);
         if (cursor != null) {

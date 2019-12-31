@@ -3,16 +3,22 @@ package com.pavchishin.sclad;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.io.File;
+
+import static com.pavchishin.sclad.DBHelper.DATABASE_PARTS;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,11 +46,54 @@ public class MainActivity extends AppCompatActivity {
         placeCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkFolder();
-                Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
-                startActivity(intent);
+                checkUnCompleteScanning();
             }
         });
+    }
+
+    private void checkUnCompleteScanning() {
+        if (new DBHelper(MainActivity.this).doesTableExist(MainActivity.this, DBHelper.TABLE_PLACES)){
+            Log.d(TAG, "Table exist");
+            String message = "Продовжити сканування";
+            confirmDialog(message);
+        } else {
+            checkFolder();
+            Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void confirmDialog(String message) {
+        final Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        setNoActionBar(MainActivity.this);
+        dialog.setCancelable(false);
+        dialog.setTitle(message);
+        dialog.setContentView(R.layout.round_corner);
+
+        TextView title = dialog.findViewById(R.id.text_dialog);
+        title.setText(message);
+
+        ImageButton dialogOk = dialog.findViewById(R.id.btn_ok);
+        dialogOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setNoActionBar(MainActivity.this);
+                startActivity(new Intent(MainActivity.this, DisplayActivity.class));
+                dialog.dismiss();
+            }
+        });
+
+        ImageButton dialogCancel = dialog.findViewById(R.id.btn_cancel);
+        dialogCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setNoActionBar(MainActivity.this);
+                deleteDatabase(DATABASE_PARTS);
+                startActivity(new Intent(MainActivity.this, ManagerActivity.class));
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     private void checkFolder() {
