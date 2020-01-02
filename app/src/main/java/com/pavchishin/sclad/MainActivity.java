@@ -4,17 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -23,16 +24,30 @@ import static com.pavchishin.sclad.DBHelper.DATABASE_PARTS;
 public class MainActivity extends AppCompatActivity {
 
     static String PLACE_FOLDER = "Places";
+    static String PARTS_FOLDER = "Parts";
     static String ONEDRIVE_FOLDER = "OneDrive";
-    static final String TAG = "S C L A D - >>>";
+    public static final String TAG = "S C L A D - >>>";
+    public static final String OUTPUT_FOLDER = "Output";
 
-    Button placeCalculate, partsCalculae, inventCalculate, exit;
+    public Context context = this;
+    String fileName;
+
+    Button placeCalculate, partsCalculate, inventCalculate, exit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setNoActionBar(this);
+
+        partsCalculate = findViewById(R.id.btn_parts);
+        partsCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkFile(PARTS_FOLDER))
+                    new CalculateTask(context, fileName).execute();
+            }
+        });
 
         exit = findViewById(R.id.btn_exit);
         exit.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +75,23 @@ public class MainActivity extends AppCompatActivity {
             checkFolder();
             Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
             startActivity(intent);
+        }
+    }
+
+    public boolean checkFile(String folderName){
+        File folder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + folderName);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        String[] fileInFolder = folder.list();
+        assert fileInFolder != null;
+        if (fileInFolder.length > 0){
+            fileName = fileInFolder[0];
+            return true;
+        } else {
+            Toast.makeText(context, "Добавте файл в папку " + folderName, Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 
