@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="300dp"
+    android:layout_gravity="center"
+    android:background="@drawable/dialog_bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/title_quantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:gravity="center"
+        android:text="@string/dialog_title"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <NumberPicker
+        android:id="@+id/numberPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_below="@+id/title_quantity"
+        android:layout_centerHorizontal="true"
+        android:solidColor="@color/colorWhite"
+        android:theme="@style/NumberPickerText" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/numberPicker"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toEndOf="@+id/numberPicker"
+        android:layout_toRightOf="@+id/numberPicker"
+        android:background="@drawable/dialog_bg"
+        android:padding="15dp"
+        android:text="@string/cancel"
+        android:textColor="@color/colorWhite"
+        tools:ignore="RtlHardcoded" />
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btn_cancel"
+        android:layout_alignBottom="@+id/btn_cancel"
+        android:layout_marginBottom="15dp"
+        android:layout_toStartOf="@+id/numberPicker"
+        android:layout_toLeftOf="@+id/numberPicker"
+        android:background="@drawable/dialog_bg"
+        android:padding="15dp"
+        android:text="@string/add_quantity"
+        android:textColor="@color/colorWhite"
+        tools:ignore="RtlHardcoded" />
+
+
+</RelativeLayout>

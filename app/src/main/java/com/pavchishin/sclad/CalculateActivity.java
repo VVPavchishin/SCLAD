@@ -3,30 +3,36 @@ package com.pavchishin.sclad;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Objects;
 
 import static com.pavchishin.sclad.CalculateTask.DATE;
 import static com.pavchishin.sclad.CalculateTask.NUMBER;
 import static com.pavchishin.sclad.MainActivity.OUTPUT_FOLDER;
 import static com.pavchishin.sclad.MainActivity.TAG;
 
-public class CalculateActivity extends AppCompatActivity {
+public class CalculateActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
     private static final String FILE_INPUT = "OUTPUT.txt";
     private static final String EMPTY = "";
@@ -48,7 +54,7 @@ public class CalculateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate);
-        setNoActionBar(this);
+        setNoActionBar();
 
         namePart = findViewById(R.id.txt_part_name);
         artikulPart = findViewById(R.id.txt_artikul);
@@ -86,11 +92,10 @@ public class CalculateActivity extends AppCompatActivity {
         });
 
         scanner = findViewById(R.id.edt_barcode);
-        scanner.setHintTextColor(Color.GREEN);
         scanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setNoActionBar(CalculateActivity.this);
+                setNoActionBar();
                 String scanText = scanner.getText().toString();
                 if(checkDatabase(scanText)){
                     plusOne.setVisibility(View.VISIBLE);
@@ -126,21 +131,45 @@ public class CalculateActivity extends AppCompatActivity {
     }
 
     private boolean checkDatabase(String scanText) {
-        return true;
+        boolean flag;
+        String subScan = scanText.replace(" ", "");
+        String scanValue;
+        int scanLength = subScan.length();
+        if (scanLength == 13){
+            scanValue = subScan.substring(0, 12);
+        } else if (scanLength == 11){
+            scanValue = subScan.substring(0, 10);
+        } else {
+            scanValue = subScan;
+        }
+        PartItem partItem = new DBHelper(this).getPartValues(this, scanValue);
+        if (partItem != null){
+            artikulPart.setText(partItem.getArtPart());
+            namePart.setText(partItem.getNamePart());
+            locationPart.setText(partItem.getLocationPart());
+            quantityDoc.setText(String.valueOf(partItem.getDockQuantityPart()));
+            quantityReal.setText(String.valueOf(partItem.getRealQuantityPart()));
+            quantityPart.setText(String.valueOf(partItem.getRealQuantityPart()));
+            difference.setText(String.valueOf(partItem.getDockQuantityPart() - partItem.getRealQuantityPart()));
+            flag = true;
+        } else {
+            flag = false;
+        }
+        return flag;
     }
 
     private void setQuantity(final String pName) {
         plusOne.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setNoActionBar(CalculateActivity.this);
+                setNoActionBar();
                 if (!isChecked) {
                     quantityPart.setBackgroundColor(Color.DKGRAY);
                     quantityPart.setEnabled(true);
                     quantityPart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //showQuantityDialog(pName);
+                            showQuantityDialog(pName);
                         }
                     });
                 } else {
@@ -155,14 +184,14 @@ public class CalculateActivity extends AppCompatActivity {
         changeLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setNoActionBar(CalculateActivity.this);
+                setNoActionBar();
                 if (isChecked){
                     locationPart.setBackgroundColor(Color.DKGRAY);
                     locationPart.setEnabled(true);
                     locationPart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            setNoActionBar(CalculateActivity.this);
+                            setNoActionBar();
                             //showLocationDialog(pName);
                         }
                     });
@@ -217,16 +246,49 @@ public class CalculateActivity extends AppCompatActivity {
 
     }
 
-    public void setNoActionBar(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = activity.getCurrentFocus();
+    private void showQuantityDialog(final String pName) {
+        setNoActionBar();
+        final Dialog dialog = new Dialog(CalculateActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_quantity);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Button add = dialog.findViewById(R.id.btn_add);
+        Button cancel = dialog.findViewById(R.id.btn_cancel);
+        final NumberPicker np = dialog.findViewById(R.id.numberPicker);
+        np.setMaxValue(100);
+        np.setMinValue(0);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(this);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setNoActionBar();
+                int docVal = Integer.parseInt(String.valueOf(quantityDoc.getText()));
+                int oldValue = Integer.parseInt(String.valueOf(quantityPart.getText()));
+                int addQuantity = np.getValue();
+                quantityPart.setText(String.valueOf(oldValue + addQuantity));
+                //updateQuantity(pName, addQuantity);
+                quantityPart.setBackgroundColor(Color.parseColor("#161516"));
+                quantityReal.setText(String.valueOf(oldValue + addQuantity));
+                difference.setText(String.valueOf(docVal - (oldValue + addQuantity)));
+                plusOne.setChecked(true);
+                dialog.dismiss();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                plusOne.setChecked(true);
+                setNoActionBar();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
 
-        if (view == null) {
-            view = new View(activity);
-        }
-        assert imm != null;
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+    public void setNoActionBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -237,4 +299,7 @@ public class CalculateActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
     }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i1) {}
 }

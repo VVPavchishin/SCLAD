@@ -205,8 +205,25 @@ public class DBHelper extends SQLiteOpenHelper {
         } while (c.moveToNext());
         c.close();
 
-
-
         return partList;
+    }
+
+    public PartItem getPartValues(Context context, String name){
+        PartItem part = null;
+        Cursor cursor = new DBHelper(context).getWritableDatabase().
+                rawQuery("SELECT * FROM " + DBHelper.TABLE_PARTS
+                        + " WHERE " + DBHelper.PART_BARCODE + " LIKE '" + name + "'", null);
+        if (cursor.moveToFirst()){
+            String artikulValue = cursor.getString(cursor.getColumnIndex(DBHelper.PART_ARTIKUL));
+            String nameValue = cursor.getString(cursor.getColumnIndex(DBHelper.PART_NAME));
+            String locationValue = cursor.getString(cursor.getColumnIndex(DBHelper.PART_PLACE));
+            int quantityDocValue = cursor.getInt(cursor.getColumnIndex(DBHelper.PART_QUANTITY_DOC));
+            int quantityRealValue = cursor.getInt(cursor.getColumnIndex(DBHelper.PART_QUANTITY_REAL));
+            part = new PartItem(artikulValue, nameValue, locationValue, quantityDocValue, quantityRealValue);
+            Log.d(TAG, part.getNamePart() + " >>> " + part.getArtPart() + " >>> "
+                    + part.getDockQuantityPart() + " >>> " + part.getRealQuantityPart() + " >>> " + part.getLocationPart());
+        }
+        cursor.close();
+        return part;
     }
 }
