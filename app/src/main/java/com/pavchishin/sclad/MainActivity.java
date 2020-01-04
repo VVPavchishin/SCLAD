@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         });
         dialog.show();
     }
-
     private void checkUncompletedScanning(String tablePlaces) {
         if (new DBHelper(MainActivity.this).doesTableExist(MainActivity.this, tablePlaces)){
             Log.d(TAG, "Table exist");
