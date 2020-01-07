@@ -226,4 +226,10 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         return part;
     }
+
+    public void updateQuantity(Context context, String artikul , int newValue){
+        new DBHelper(context).getWritableDatabase().execSQL("UPDATE " + DBHelper.TABLE_PARTS + " SET " +
+                DBHelper.PART_QUANTITY_REAL + " = " + DBHelper.PART_QUANTITY_REAL + "+" + newValue + " WHERE "
+                + DBHelper.PART_ARTIKUL + "=?", new String[]{artikul});
+    }
 }

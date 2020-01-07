@@ -44,23 +44,8 @@ public class MainActivity extends AppCompatActivity {
         partsCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (new DBHelper(MainActivity.this).doesTableExist(MainActivity.this, DBHelper.TABLE_PARTS)){
-                    Log.d(TAG, "Table exist");
-                    String message = "Продовжити сканування";
-                    confirmPartDialog(message);
-                } else {
-                    checkFolder();
-                    Intent intent = new Intent(MainActivity.this, CalculateActivity.class);
-                    startActivity(intent);
-                }
-            }
-        });
-
-        exit = findViewById(R.id.btn_exit);
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishAffinity();
+                if (checkFile(PARTS_FOLDER))
+                    new CalculateTask(context, fileName).execute();
             }
         });
 
@@ -68,46 +53,20 @@ public class MainActivity extends AppCompatActivity {
         placeCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkUncompletedScanning(DBHelper.TABLE_PLACES);
+                checkUnCompleteScanning();
+            }
+        });
+        exit = findViewById(R.id.btn_exit);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishAffinity();
             }
         });
     }
 
-    private void confirmPartDialog(String message) {
-        final Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        setNoActionBar(MainActivity.this);
-        dialog.setCancelable(false);
-        dialog.setTitle(message);
-        dialog.setContentView(R.layout.round_corner);
-
-        TextView title = dialog.findViewById(R.id.text_dialog);
-        title.setText(message);
-
-        ImageButton dialogOk = dialog.findViewById(R.id.btn_ok);
-        dialogOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setNoActionBar(MainActivity.this);
-                startActivity(new Intent(MainActivity.this, CalculateActivity.class));
-                dialog.dismiss();
-            }
-        });
-
-        ImageButton dialogCancel = dialog.findViewById(R.id.btn_cancel);
-        dialogCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setNoActionBar(MainActivity.this);
-                deleteDatabase(DATABASE_PARTS);
-                if (checkFile(PARTS_FOLDER))
-                    new CalculateTask(context, fileName).execute();
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
-    }
-    private void checkUncompletedScanning(String tablePlaces) {
-        if (new DBHelper(MainActivity.this).doesTableExist(MainActivity.this, tablePlaces)){
+    private void checkUnCompleteScanning() {
+        if (new DBHelper(context).doesTableExist(context, DBHelper.TABLE_PLACES)){
             Log.d(TAG, "Table exist");
             String message = "Продовжити сканування";
             confirmDialog(message);

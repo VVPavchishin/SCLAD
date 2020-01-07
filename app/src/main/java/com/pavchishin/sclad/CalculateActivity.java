@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -36,6 +37,8 @@ public class CalculateActivity extends AppCompatActivity implements NumberPicker
 
     private static final String FILE_INPUT = "OUTPUT.txt";
     private static final String EMPTY = "";
+
+    Context context = this;
 
     ImageButton back;
     TextView numberView;
@@ -268,7 +271,7 @@ public class CalculateActivity extends AppCompatActivity implements NumberPicker
                 int oldValue = Integer.parseInt(String.valueOf(quantityPart.getText()));
                 int addQuantity = np.getValue();
                 quantityPart.setText(String.valueOf(oldValue + addQuantity));
-                //updateQuantity(pName, addQuantity);
+                updateQuantity(pName, addQuantity);
                 quantityPart.setBackgroundColor(Color.parseColor("#161516"));
                 quantityReal.setText(String.valueOf(oldValue + addQuantity));
                 difference.setText(String.valueOf(docVal - (oldValue + addQuantity)));
@@ -285,6 +288,10 @@ public class CalculateActivity extends AppCompatActivity implements NumberPicker
             }
         });
         dialog.show();
+    }
+
+    private void updateQuantity(String pName, int addQuantity) {
+        new DBHelper(context).updateQuantity(context, pName, addQuantity);
     }
 
 
