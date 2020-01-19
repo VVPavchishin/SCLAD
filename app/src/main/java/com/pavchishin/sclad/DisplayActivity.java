@@ -43,6 +43,8 @@ public class DisplayActivity extends AppCompatActivity {
 
     List<String> boxList;
 
+    PartAdapter partAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,10 +127,15 @@ public class DisplayActivity extends AppCompatActivity {
     }
 
     private void checkBarcode(String barcode) {
-        String code = barcode.trim().substring(0,8);
+        String code = "";
+        if (barcode.length() < 9){
+            wrongBarcode();
+        } else {
+            code = barcode.trim().substring(0,8);
+        }
         Log.d(TAG, code);
         if (boxList.contains(code)){
-            status.setBackgroundResource(R.drawable.ok_im);
+            status.setBackgroundResource(R.drawable.ok_image);
             new Sound(context, true);
             scanField.setText("");
             setScanned(code);
@@ -137,17 +144,25 @@ public class DisplayActivity extends AppCompatActivity {
             fillRightDisplay(code);
             if (new DBHelper(context).setUnScanNumbers(context, DBHelper.TABLE_PLACES) == 0){
                 status.setBackgroundResource(R.drawable.mission_complete);
+                partAdapter.clear();
+                partAdapter.notifyDataSetChanged();
             }
         } else {
-            status.setBackgroundResource(R.drawable.not_ok_im);
-            new Sound(context, false);
-            scanField.setText("");
+            wrongBarcode();
         }
+    }
+
+    private void wrongBarcode() {
+        status.setBackgroundResource(R.drawable.not_okey);
+        new Sound(context, false);
+        scanField.setText("");
+        partAdapter.clear();
+        partAdapter.notifyDataSetChanged();
     }
 
     private void fillRightDisplay(String code) {
         ArrayList<Part> parts = new DBHelper(context).setBoxParts(context, code);
-        PartAdapter partAdapter = new PartAdapter(context, R.layout.part_layout, parts);
+        partAdapter = new PartAdapter(context, R.layout.part_layout, parts);
         partsView.setAdapter(partAdapter);
     }
 
