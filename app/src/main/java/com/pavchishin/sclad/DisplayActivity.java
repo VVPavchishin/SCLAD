@@ -1,12 +1,8 @@
 package com.pavchishin.sclad;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +129,7 @@ public class DisplayActivity extends AppCompatActivity {
         Log.d(TAG, code);
         if (boxList.contains(code)){
             status.setBackgroundResource(R.drawable.ok_im);
+            new Sound(context, true);
             scanField.setText("");
             setScanned(code);
             fillBoxDisplay();
@@ -141,6 +140,7 @@ public class DisplayActivity extends AppCompatActivity {
             }
         } else {
             status.setBackgroundResource(R.drawable.not_ok_im);
+            new Sound(context, false);
             scanField.setText("");
         }
     }

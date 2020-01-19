@@ -1,8 +1,5 @@
 package com.pavchishin.sclad;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +8,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setNoActionBar(this);
+        setNoActionBar();
 
         partsCalculate = findViewById(R.id.btn_parts);
         partsCalculate.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void confirmDialog(String message) {
         final Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        setNoActionBar(MainActivity.this);
         dialog.setCancelable(false);
         dialog.setTitle(message);
         dialog.setContentView(R.layout.round_corner);
@@ -108,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         dialogOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setNoActionBar(MainActivity.this);
                 startActivity(new Intent(MainActivity.this, DisplayActivity.class));
                 dialog.dismiss();
             }
@@ -118,13 +114,14 @@ public class MainActivity extends AppCompatActivity {
         dialogCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setNoActionBar(MainActivity.this);
                 deleteDatabase(DATABASE_PARTS);
                 startActivity(new Intent(MainActivity.this, ManagerActivity.class));
                 dialog.dismiss();
             }
         });
         dialog.show();
+        setNoActionBar();
+
     }
 
     private void checkFolder() {
@@ -137,16 +134,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Folder " + PLACE_FOLDER + " exist!");
         }
     }
-    public void setNoActionBar(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = activity.getCurrentFocus();
-
-        if (view == null) {
-            view = new View(activity);
-        }
-        assert imm != null;
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
+    public void setNoActionBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
