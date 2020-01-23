@@ -9,31 +9,32 @@ class Sound {
     private int ok;
     private int notOk;
 
+    private boolean loaded = false;
+
     Context context;
 
-    Sound(Context context, final boolean flag) {
-        this.context = context;
+    Sound(Context context) {
         sound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        this.context = context;
         ok = sound.load(context, R.raw.ok, 1);
         notOk = sound.load(context, R.raw.not_ok, 1);
         sound.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-           @Override
-           public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-               if (!flag){
-                   notOkSound();
-               } else {
-                   okSound();
-               }
-
-           }
-       });
+            public void onLoadComplete(SoundPool soundPool, int sampleId,int status) {
+                loaded = true;
+            }
+        });
     }
 
-    private void notOkSound() {
-        sound.play(notOk, 1, 1, 0, 0, 1);
+
+    public void notOkSound() {
+        if (loaded) {
+            sound.play(notOk, 1, 1, 0, 0, 1);
+        }
     }
 
-    private void okSound() {
-        sound.play(ok, 1, 1, 0, 0, 1);
+    public void okSound() {
+        if (loaded) {
+            sound.play(ok, 1, 1, 0, 0, 1);
+        }
     }
 }

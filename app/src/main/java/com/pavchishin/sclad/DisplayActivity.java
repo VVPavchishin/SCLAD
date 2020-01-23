@@ -44,12 +44,15 @@ public class DisplayActivity extends AppCompatActivity {
     List<String> boxList;
 
     PartAdapter partAdapter;
+    Sound sound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
         setNoActionBar(this);
+
+        sound = new Sound(context);
 
         qDock = findViewById(R.id.title_quant_number);
         qPlace = findViewById(R.id.title_place_number);
@@ -128,7 +131,7 @@ public class DisplayActivity extends AppCompatActivity {
 
     private void checkBarcode(String barcode) {
         String code = "";
-        if (barcode.length() < 9){
+        if (barcode.length() < 7){
             wrongBarcode();
         } else {
             code = barcode.trim().substring(0,8);
@@ -136,7 +139,7 @@ public class DisplayActivity extends AppCompatActivity {
         Log.d(TAG, code);
         if (boxList.contains(code)){
             status.setBackgroundResource(R.drawable.ok_image);
-            new Sound(context, true);
+            sound.okSound();
             scanField.setText("");
             setScanned(code);
             fillBoxDisplay();
@@ -154,10 +157,11 @@ public class DisplayActivity extends AppCompatActivity {
 
     private void wrongBarcode() {
         status.setBackgroundResource(R.drawable.not_okey);
-        new Sound(context, false);
+        sound.notOkSound();
         scanField.setText("");
-        partAdapter.clear();
-        partAdapter.notifyDataSetChanged();
+        if (partsView.getChildCount() > 0) {
+            partsView.setAdapter(null);
+        }
     }
 
     private void fillRightDisplay(String code) {

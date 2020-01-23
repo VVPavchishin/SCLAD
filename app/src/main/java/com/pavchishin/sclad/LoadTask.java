@@ -35,7 +35,8 @@ public class LoadTask extends AsyncTask<String, Integer, Void> {
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
 
-    public LoadTask(ChoiseActivity activity, ProgressBar progressBar) {
+    public
+    LoadTask(ChoiseActivity activity, ProgressBar progressBar) {
         this.activity = activity;
         this.progressBar = progressBar;
     }
