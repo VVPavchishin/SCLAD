@@ -2,11 +2,10 @@ package com.pavchishin.sclad;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import java.io.File;
@@ -27,10 +26,19 @@ public class CopyTask extends AsyncTask<String, Void, Void> {
     @SuppressLint("StaticFieldLeak")
     private Activity activity;
 
-    public CopyTask(List<Item> itemList, ProgressBar progressBar, ChoiseActivity choiseActivity) {
+    @SuppressLint("StaticFieldLeak")
+    private ImageButton back;
+    @SuppressLint("StaticFieldLeak")
+    private ImageButton ok;
+
+
+    CopyTask(List<Item> itemList, ProgressBar progressBar,
+             ChoiseActivity choiseActivity, ImageButton back, ImageButton ok) {
         this.itemList = itemList;
         this.activity = choiseActivity;
         this.progressBar = progressBar;
+        this.back = back;
+        this.ok = ok;
     }
 
 
@@ -41,7 +49,7 @@ public class CopyTask extends AsyncTask<String, Void, Void> {
                 + File.separator + PLACE_FOLDER);
         String[] inputFiles = workDirPath.list();
         assert inputFiles != null;
-        new LoadTask((ChoiseActivity) activity, progressBar).execute(inputFiles);
+        new LoadTask((ChoiseActivity) activity, progressBar, back, ok).execute(inputFiles);
     }
 
 

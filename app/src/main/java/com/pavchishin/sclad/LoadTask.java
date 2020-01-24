@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -35,10 +36,18 @@ public class LoadTask extends AsyncTask<String, Integer, Void> {
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
 
-    public
-    LoadTask(ChoiseActivity activity, ProgressBar progressBar) {
+
+    @SuppressLint("StaticFieldLeak")
+    private ImageButton back;
+    @SuppressLint("StaticFieldLeak")
+    private ImageButton ok;
+
+
+    LoadTask(ChoiseActivity activity, ProgressBar progressBar, ImageButton back, ImageButton ok) {
         this.activity = activity;
         this.progressBar = progressBar;
+        this.back = back;
+        this.ok = ok;
     }
 
     @Override
@@ -48,6 +57,8 @@ public class LoadTask extends AsyncTask<String, Integer, Void> {
         database = new DBHelper(activity).getWritableDatabase();
         helper.onCreatePlaceDB(database);
         progressBar.setVisibility(View.VISIBLE);
+        ok.setVisibility(View.INVISIBLE);
+        back.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -62,7 +73,7 @@ public class LoadTask extends AsyncTask<String, Integer, Void> {
         int fileCount = 0;
             for (String fileName : strings){
                 try {
-                    Log.d(TAG, ">>>> " + fileName + " <<<<");
+                    //Log.d(TAG, ">>>> " + fileName + " <<<<");
                     fillDataBase(fileName);
                     publishProgress(++fileCount);
                 } catch (Exception e) {

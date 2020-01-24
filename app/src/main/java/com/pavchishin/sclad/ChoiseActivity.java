@@ -66,7 +66,7 @@ public class ChoiseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 removeFileIsExist();
-                    new CopyTask(itemList, progressBar, ChoiseActivity.this).execute();
+                    new CopyTask(itemList, progressBar, ChoiseActivity.this, back, ok).execute();
             }
         });
 
